@@ -1,0 +1,54 @@
+$background-primary: #0E0E0E;
+$background-secondary: #1C1C1C;
+$background-highlight: #292929;
+
+$primary-1: #FF007A;
+$primary-2: #00D1FF;
+$primary-3: #FFD700;
+$primary-4: #ff49a1;
+
+$button-default: #00D1FF;
+$button-hover: #00FFFF;
+
+$error-default: #FF4545;
+$error-hover: #FF6B6B;
+
+$success-default: #24FF77;
+$success-hover: #50FF99;
+
+$warning-default: #FFAA00;
+$warning-hover: #FFC100;
+
+$text-primary: #FFFFFF;
+$text-secondary: #CCCCCC;
+$text-tertiary: #777777;
+
+$disabled: #444444;
+
+:export {
+    background-primary: $background-primary;
+    background-secondary: $background-secondary;
+    background-highlight: $background-highlight;
+
+    primary-1: $primary-1;
+    primary-2: $primary-2;
+    primary-3: $primary-3;
+
+    button-default: $button-default;
+    button-hover: $button-hover;
+
+    error-default: $error-default;
+    error-hover: $error-hover;
+
+    success-default: $success-default;
+    success-hover: $success-hover;
+
+    warning-default: $warning-default;
+    warning-hover: $warning-hover;
+
+    text-primary: $text-primary;
+    text-secondary: $text-secondary;
+    text-tertiary: $text-tertiary;
+
+    disabled: $disabled;
+}

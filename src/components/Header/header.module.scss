@@ -1,0 +1,55 @@
+@use '../../styles/variables' as v;
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding: 20px 48px;
+    font-family: var(--font-geist-sans);
+    // background-color: v.$background-secondary;
+    color: v.$text-primary;
+    border-bottom: 1px solid v.$background-secondary;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    z-index: 5;
+
+    h1 {
+        font-size: 1.2rem;
+        font-weight: 700;
+        color: v.$primary-1;
+
+        span {
+            font-weight: 700;
+            color: v.$primary-2;
+        }
+    }
+}
+
+.menu {
+    display: flex;
+    align-items: center;
+
+    ul {
+        display: flex;
+        list-style: none;
+
+        li {
+            margin-left: 32px;
+            cursor: pointer;
+        }
+    }
+
+    a {
+        font-size: 1rem;
+        font-weight: 500;
+        color: v.$text-primary;
+        text-decoration: none;
+        transition: color 0.2s ease-in-out;
+
+        &:hover {
+            color: v.$primary-1;
+        }
+    }
+}

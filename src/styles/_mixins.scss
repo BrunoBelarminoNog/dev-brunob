@@ -1,0 +1,48 @@
+/* Breakpoints mais comuns */
+$breakpoint-mobile-small: 320px; // Mobile portrait (pequenos)
+$breakpoint-mobile-large: 480px; // Mobile grande (landscape ou maior)
+$breakpoint-tablet: 768px; // Tablets
+$breakpoint-desktop: 1024px; // Desktops
+$breakpoint-desktop-large: 1440px; // Desktops grandes
+
+/* Exportação para uso modular */
+:export {
+    mobileSmall: $breakpoint-mobile-small;
+    mobileLarge: $breakpoint-mobile-large;
+    tablet: $breakpoint-tablet;
+    desktop: $breakpoint-desktop;
+    desktopLarge: $breakpoint-desktop-large;
+}
+
+/* Mixins para media queries */
+@mixin breakpoint($breakpoint) {
+    @if $breakpoint ==mobile-small {
+        @media (max-width: $breakpoint-mobile-small) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==mobile-large {
+        @media (max-width: $breakpoint-mobile-large) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==tablet {
+        @media (max-width: $breakpoint-tablet) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==desktop {
+        @media (max-width: $breakpoint-desktop) {
+            @content;
+        }
+    }
+
+    @else if $breakpoint ==desktop-large {
+        @media (max-width: $breakpoint-desktop-large) {
+            @content;
+        }
+    }
+}
