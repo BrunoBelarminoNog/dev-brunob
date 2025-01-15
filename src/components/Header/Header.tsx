@@ -2,13 +2,11 @@
 import Link from 'next/link';
 
 import { motion, useAnimate } from 'motion/react';
-import { useEffect } from 'react';
 import styles from './header.module.scss';
 
 const Header = () => {
   const [scope, animate] = useAnimate();
 
-  useEffect(() => {}, []);
   window.addEventListener('animationIntroInit', () => {
     console.log('animationIntroInit');
     animate(scope.current, {

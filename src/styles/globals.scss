@@ -1,9 +1,13 @@
 @use './reset';
 @use './variables' as v;
+// Vendors
+@import '../../node_modules/locomotive-scroll/bundled/locomotive-scroll.css';
 
 body {
     background-color: v.$background-highlight;
     color: v.$text-primary;
+    // cursor: none;
+    overflow-x: hidden;
 }
 
 

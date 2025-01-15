@@ -1,5 +1,5 @@
 'use client';
-import { Environment, Html, Preload, useProgress } from '@react-three/drei';
+import { Html, useProgress } from '@react-three/drei';
 import { Canvas } from '@react-three/fiber';
 import { Suspense } from 'react';
 import Model from './Model';
@@ -22,19 +22,17 @@ export default function Scene() {
       {/* </GizmoHelper> */}
       {/* <directionalLight position={[-5, -5, 5]} intensity={4} /> */}
       <Suspense fallback={<Loader />}>
-        {/* <ambientLight intensity={2} /> */}
-        {/* <directionalLight position={[2, 4, 5]} intensity={4}  />
-        
-        */}
+        <ambientLight intensity={1} />
+        <directionalLight position={[2, 4, 5]} intensity={2} />
 
-        <ambientLight intensity={0.5} />
-        <spotLight
-          position={[10, 10, 10]}
-          angle={1}
-          penumbra={10}
-          shadow-mapSize={1024}
-          castShadow
-        ></spotLight>
+        {/* <spotLight
+          position={[-1, -1, -1]}
+          angle={50}
+          intensity={2}
+          penumbra={1}
+          // shadow-mapSize={1024}
+          // castShadow
+        /> */}
         {/* <SpotLight>
           <SpotLightShadow
             distance={0.4} // Distance between the shadow caster and light
@@ -58,9 +56,8 @@ export default function Scene() {
           maxAzimuthAngle={0.8}
         /> */}
         <Model />
-        <Preload all />
 
-        <Environment preset="city" />
+        {/* <Environment preset="city" /> */}
       </Suspense>
     </Canvas>
   );

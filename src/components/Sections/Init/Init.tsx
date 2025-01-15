@@ -1,37 +1,75 @@
+import { useSections } from '@/contexts/sections/sectionsContext';
 import { motion, MotionConfig } from 'motion/react';
+import { useEffect, useState } from 'react';
 import styles from './init.module.scss';
 
 const variants = {
   delay: (custom: number) => ({
-    transition: { delay: 8 + custom, duration: 1 },
+    transition: { delay: custom + 1, duration: 1 },
     x: 0,
     opacity: 1,
   }),
   zoom: (custom: number) => ({
-    transition: { delay: 9 + custom, duration: 0.3, ease: 'easeOut' },
+    transition: { delay: custom + 1, duration: 0.3, ease: 'easeOut' },
     scale: 1,
     opacity: 1,
   }),
 };
 
+const animationVariants = {
+  hidden: { opacity: 0, x: -100 },
+  visible: { opacity: 1, x: 0 },
+};
+
+const zoomVariants = {
+  hidden: { opacity: 0, scale: 0.2 },
+  visible: { opacity: 1, scale: 1 },
+};
+
 const Init = () => {
+  const { currentSection, previousSection } = useSections();
+
+  const delayAnimation = currentSection === 'main' && previousSection === 'main' ? 7.5 : 2;
+
+  const [animation, setAnimation] = useState('hidden');
+
+  useEffect(() => {
+    window.addEventListener('playSectionInitContent', () => {
+      setAnimation('visible');
+    });
+
+    return () => {
+      window.removeEventListener('playSectionInitContent', () => {
+        setAnimation('hidden');
+      });
+    };
+  }, []);
+
   return (
     <MotionConfig transition={{ duration: 1 }}>
       <motion.main className={styles.main} exit={{ opacity: 0 }}>
         <motion.div exit={{ x: 10 }} animate="delay" className={styles.content}>
           <motion.h1
-            initial={{ opacity: 0, x: -100 }}
-            animate="delay"
-            variants={variants}
-            custom={0}
+            // initial={{ opacity: 0, x: -100 }}
+            // animate="delay"
+            // variants={variants}
+            // custom={delayAnimation}
+            initial="hidden"
+            animate={animation}
+            transition={{ duration: 1 }}
+            variants={animationVariants}
           >
             Bruno B.
           </motion.h1>
           <motion.h2
-            initial={{ opacity: 0, x: -100 }}
-            animate="delay"
-            variants={variants}
-            custom={0}
+            // initial={{ opacity: 0, x: -100 }}
+            // animate="delay"
+            // variants={variants}
+            // custom={delayAnimation}
+            initial="hidden"
+            animate={animation}
+            transition={{ duration: 1 }}
+            variants={animationVariants}
           >
             Front-end - Arquitetura - Dados
           </motion.h2>
@@ -40,35 +78,51 @@ const Init = () => {
             emocionam.
           </p> */}
           <motion.p
-            initial={{ opacity: 0, x: -100 }}
-            animate="delay"
-            variants={variants}
-            custom={0.3}
+            // initial={{ opacity: 0, x: -100 }}
+            // animate="delay"
+            // variants={variants}
+            // custom={delayAnimation + 0.3}
+            initial="hidden"
+            animate={animation}
+            transition={{ duration: 1, delay: 0.3 }}
+            variants={animationVariants}
           >
             <span>Criação</span> de experiências imersivas
           </motion.p>
           <motion.p
-            initial={{ opacity: 0, x: -100 }}
-            animate="delay"
-            variants={variants}
-            custom={0.4}
+            // initial={{ opacity: 0, x: -100 }}
+            // animate="delay"
+            // variants={variants}
+            // custom={delayAnimation + 0.4}
+            initial="hidden"
+            animate={animation}
+            transition={{ duration: 1, delay: 0.4 }}
+            variants={animationVariants}
           >
             <span>Desenvolvimento</span> de aplicações escaláveis
           </motion.p>
           <motion.p
-            initial={{ opacity: 0, x: -100 }}
-            animate="delay"
-            variants={variants}
-            custom={0.5}
+            // initial={{ opacity: 0, x: -100 }}
+            // animate="delay"
+            // variants={variants}
+            // custom={delayAnimation + 0.5}
+            initial="hidden"
+            animate={animation}
+            transition={{ duration: 1, delay: 0.5 }}
+            variants={animationVariants}
           >
             <span>Monitoria</span> de dados estratégicos
           </motion.p>
 
           <motion.div
-            variants={variants}
-            custom={1}
-            initial={{ opacity: 0, scale: 0.2 }}
-            animate="zoom"
+            // variants={variants}
+            // custom={delayAnimation + 1}
+            // initial={{ opacity: 0, scale: 0.2 }}
+            // animate="zoom"
+            initial="hidden"
+            animate={animation}
+            transition={{ duration: 1, delay: 1 }}
+            variants={zoomVariants}
             whileHover={{ scale: 1.1, transition: { duration: 0.25 } }}
             whileTap={{ scale: 0.9, transition: { duration: 0.25 } }}
             className={styles.blog}
@@ -78,10 +132,14 @@ const Init = () => {
             </a>
           </motion.div>
           <motion.div
-            variants={variants}
-            custom={0.5}
-            initial={{ opacity: 0, x: -100 }}
-            animate="delay"
+            // variants={variants}
+            // custom={delayAnimation + 2}
+            // initial={{ opacity: 0, x: -100 }}
+            // animate="delay"
+            initial="hidden"
+            animate={animation}
+            transition={{ duration: 1, delay: 2 }}
+            variants={animationVariants}
             className={styles.social}
           >
             <a href="https://www.linkedin.com/in/brunobr/" target="_blank" rel="noreferrer">

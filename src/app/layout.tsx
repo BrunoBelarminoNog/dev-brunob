@@ -1,6 +1,7 @@
 import Scene from '@/components/Avatar3d/Scene';
 import Header from '@/components/Header/Header';
 import { SectionsProvider } from '@/contexts/sections/sectionsContext';
+import 'locomotive-scroll/locomotive-scroll.css';
 import { AnimatePresence } from 'motion/react';
 import type { Metadata } from 'next';
 import localFont from 'next/font/local';
@@ -32,7 +33,7 @@ export default function RootLayout({
   return (
     <SectionsProvider>
       <html lang="en">
-        <body className={`${geistSans.variable} ${geistMono.variable}`}>
+        <body className={`${geistSans.variable} ${geistMono.variable}`} id="app">
           <Header />
           <AnimatePresence mode="sync" initial={false}>
             <Template>{children}</Template>
