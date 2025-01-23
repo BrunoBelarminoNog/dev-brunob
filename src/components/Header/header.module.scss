@@ -15,10 +15,55 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     z-index: 5;
 
-    h1 {
+
+}
+
+.container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+}
+
+
+.blog {
+
+    a {
+        text-align: start;
+        font-size: 1rem;
+        color: v.$text-primary;
+        font-weight: 300;
+        display: flex;
+        text-decoration: none;
+        transition: background-color 0.5s, color 0.3s;
+        padding: 6px 24px;
+        border: 2px v.$primary-1 solid;
+        border-radius: 12px;
+
+        span {
+            color: v.$primary-1;
+            font-weight: 700;
+        }
+
+        &:hover {
+            background-color: v.$primary-1;
+            color: v.$background-primary;
+
+            span {
+                color: v.$background-primary;
+            }
+        }
+    }
+}
+
+
+
+.logo {
+    a {
         font-size: 1.2rem;
         font-weight: 700;
         color: v.$primary-1;
+        text-decoration: none;
 
         span {
             font-weight: 700;

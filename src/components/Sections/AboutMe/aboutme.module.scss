@@ -1,18 +1,28 @@
 @use '../../../styles/variables' as v;
+$widthSectionCarolsel: min(50vw, 700px);
 
 
 .main {
     display: grid;
-    // flex-direction: column;
     grid-template-columns: 1fr 1fr;
-    // height: 100vh;
     width: 99vw;
     align-items: center;
     position: relative;
-    height: calc(100vh + 150vw);
-    // justify-content: center;
-    // margin-top: 120px;
+    min-height: calc($widthSectionCarolsel * 1.5 + 100vh);
 
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: v.$primary-1;
+        border-radius: 12px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: v.$background-primary;
+        border-radius: 12px;
+    }
 }
 
 .emptycontent {
@@ -22,61 +32,23 @@
 
 .content {
     height: 60vh;
+    max-height: 400px;
     width: 50vw;
     display: flex;
     flex-direction: column;
     color: v.$text-primary;
     z-index: 1;
     position: fixed;
-    top: 20vh;
+    top: calc(50% - min(60vh, 400px) / 2);
     left: 50vw;
-    // div {
-    //     position: sticky;
-    //     top: 0;
-    //     overflow: hidden;
-    //     height: 100vh;
-    //     display: flex;
-    // }
-
-    // section {
-    //     // border-radius: 18px;
-    //     // padding: 24px;
-    //     // backdrop-filter: blur(2px);
-
-    //     background-color: rgba(0, 0, 0, 0.8);
-    //     width: 50vw;
-    //     display: flex;
-    //     flex-direction: column;
-    //     color: v.$text-primary;
-    //     // padding: 8px 16px 8px 8px;
-    //     // z-index: 5;
-    //     // overflow: auto;
-
-    //     // box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
-    //     &::-webkit-scrollbar {
-    //         width: 8px;
-    //     }
-
-    //     &::-webkit-scrollbar-thumb {
-    //         background-color: v.$primary-1;
-    //         border-radius: 12px;
-    //     }
-
-    //     &::-webkit-scrollbar-track {
-    //         background-color: v.$background-primary;
-    //         border-radius: 12px;
-    //     }
-    // }
-
-
-
 
     h1 {
         text-align: start;
-        font-size: 2rem;
+        font-size: 1.5rem;
         color: v.$primary-1;
         font-weight: 600;
-        margin-bottom: 32px;
+        margin-bottom: 0px;
+        margin-left: 18px;
     }
 
     h2 {
@@ -88,8 +60,8 @@
 
     p {
         text-align: start;
-        font-size: 1rem;
-        line-height: 1.4rem;
+        font-size: .9rem;
+        line-height: 1.2rem;
         color: v.$text-secondary;
         font-weight: 400;
         display: inline-block;
@@ -106,7 +78,7 @@
         }
 
         &:not(:last-child) {
-            margin-bottom: 1rem;
+            margin-bottom: .8rem;
         }
 
 
@@ -179,19 +151,15 @@
     position: relative;
 }
 
+
 .carouselContainer {
-    width: 50vw;
-    height: calc(60vh - 64px);
+    width: min(50vw, 700px);
+    height: calc(min(60vh, 400px) - 32px);
     overflow-y: scroll;
     overflow-x: hidden;
     scroll-snap-type: y mandatory;
     scrollbar-width: none;
-    /* Hide scrollbar in Firefox */
     -ms-overflow-style: none;
-    /* Hide scrollbar in IE */
-    // border: 1px solid red;
-
-
 }
 
 .carouselContainer::-webkit-scrollbar {
@@ -200,16 +168,16 @@
 }
 
 .carouselInner {
-    width: 200vw;
+    width: calc($widthSectionCarolsel * 4);
     /* 5 sections * 100% */
-    height: calc(60vh - 64px);
+    height: calc(min(60vh, 400px) - 32px);
     // border: 1px solid green;
 
 }
 
 .carouselSection {
     scroll-snap-align: start;
-    width: 50vw;
+    width: $widthSectionCarolsel;
     /* Full width */
     height: 100%;
     display: flex;
@@ -224,15 +192,14 @@
     padding-left: 18px;
 }
 
-.carouselTrack {
+.carouselBorder {
     position: absolute;
     width: 40px;
     bottom: 0px;
     left: -36px;
-    height: 2px;
-    // scaleX: 0.9;
+    height: 3px;
     z-index: 1;
-    transform: scaleX(0.9);
+    // transform: scaleX(0.9);
 
     &::before {
         content: '';
@@ -242,9 +209,8 @@
         background-color: inherit;
         top: -199px;
         left: 0px;
-        transform: scaleX(1.1);
-        // backgroundColor: 'red';
-        // zIndex: 1;
+        // transform: scaleX(1.1);
+
     }
 
     &::after {
@@ -254,12 +220,40 @@
         max-width: 260px;
         height: 2px;
         background-color: inherit;
-        bottom: calc(60vh - 64px);
+        top: calc((50% - min(60vh, 400px)) + 32px);
         left: calc(50vw - 150px);
-        transform: scaleX(0.99);
-        // backgroundColor: 'red';
-        // zIndex: 1;
+        // transform: scaleX(0.9);
     }
 
 
+}
+
+.carouselProgress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: $widthSectionCarolsel;
+    max-width: 100%;
+
+
+    span {
+        position: absolute;
+        width: 28px;
+        height: 3px;
+        bottom: 0;
+        z-index: 5;
+        transition: opacity 350ms ease-in-out 500ms, transform 350ms ease-in-out 500ms;
+    }
+}
+
+.carouselProgressInner {
+    position: absolute;
+    height: 3px;
+    top: 0;
+    left: 0;
+    z-index: 4;
+    width: $widthSectionCarolsel;
+    max-width: 100%;
+    cursor: pointer;
 }

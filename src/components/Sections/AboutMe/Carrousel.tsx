@@ -1,175 +1,177 @@
 import { mix, motion, useAnimation } from 'motion/react';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import styles from './aboutme.module.scss';
 
-const sections = [1, 2, 3, 4, 5];
-let activeIndex = 0;
-let currentSection = 0;
-let previousSection = 0;
-let scrollF = 0;
-const animationVariants = {
-  hidden: { opacity: 0, x: 100 },
-  visible: { opacity: 1, x: 0 },
-};
-
-const Carousel = ({ scrollTo }: { scrollTo: (value: number) => void }) => {
+const Carousel = ({
+  scrollTo,
+  visible,
+}: {
+  scrollTo: (value: number) => void;
+  visible: boolean;
+}) => {
   const containerRef = useRef<HTMLDivElement>(null);
-  const controls = useAnimation();
-  const progressControl = useAnimation();
-  const elementControl = useAnimation();
-  //   const [scrollY, setScrollY] = useState(0);
-  //   const [currentSection, setCurrentSection] = useState(0);
 
-  //   let currentScroll = 0;
+  const elemCarouselBorder = useAnimation();
+  const elemCarouselWrapper = useAnimation();
+  const elemCarouselBarProgress = useAnimation();
+  const elemCarouselPointsProgress = useAnimation();
+  const elementCarouselSlides = useAnimation();
 
-  //   const handleScroll = (scrollY: number) => {
-  //     const sectionWidth = window.innerWidth / 2;
-  //     scrollY = Math.round(scrollY);
+  const mixColor = mix('#ff0088', '#008cff');
 
-  //     let currentPos = scrollY / sectionWidth;
-  //     currentPos = Number.parseFloat(currentPos.toFixed(3));
-
-  //     if (currentPos >= 0 && currentPos < 0.8) {
-  //       activeIndex = 0;
-  //       currentScroll = 0;
-  //     } else if (currentPos >= 0.8 && currentPos < 1) {
-  //       activeIndex = 0;
-  //       const diff = (currentPos - 0.8) * sectionWidth;
-  //       currentScroll = diff;
-  //     } else if (currentPos >= 1 && currentPos < 1.8) {
-  //       activeIndex = 1;
-  //       currentScroll = sectionWidth * 1;
-  //     } else if (currentPos >= 1.8 && currentPos < 2) {
-  //       const diff = (currentPos - 1.8) * sectionWidth;
-  //       currentScroll = diff + sectionWidth;
-  //     } else if (currentPos >= 2 && currentPos < 2.6) {
-  //       activeIndex = 2;
-  //       currentScroll = sectionWidth * 2;
-  //     } else if (currentPos >= 2.6 && currentPos < 2.9) {
-  //       const diff = (currentPos - 2.6) * sectionWidth;
-  //       currentScroll = diff + sectionWidth * 2;
-  //     } else if (currentPos >= 2.9) {
-  //       activeIndex = 3;
-  //       currentScroll = sectionWidth * 3;
-  //     }
-
-  //     controls.start({
-  //       x: currentScroll * -1,
-  //       transition: { type: 'spring', stiffness: 80, damping: 20 },
-  //     });
-  //   };
+  const [totalSlides, setTotalSlides] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [resizeKey, setResizeKey] = useState(0);
 
   const handleScroll = (scrollY: number) => {
-    const sectionWidth = window.innerWidth / 2;
-    const normalizedScroll = scrollY / sectionWidth;
-    const roundedScroll = Number(normalizedScroll.toFixed(3));
-    const threshold = 0.1; // 20% transition zone
+    const slideWidth = Math.min(window.innerWidth * 0.5, 700);
+    const normalizedSlide = scrollY / (slideWidth * 0.5);
+    const roundedSlide = Number(normalizedSlide.toFixed(3));
+    const current = Math.round(roundedSlide);
+    const newScroll = -current * slideWidth;
 
-    let activeIndex = Math.floor(roundedScroll);
-    let currentScroll = activeIndex * sectionWidth;
+    const offsetCarrosel = roundedSlide / 3;
+    let offsetSlide = 0;
 
-    // Calculate transition effect within the last 20% of each section
-    let offset = roundedScroll - activeIndex;
-    if (offset >= 1 - threshold && offset < 1) {
-      const progress = (offset - (1 - threshold)) / threshold;
-      currentScroll += progress * sectionWidth;
+    if (current === 0) {
+      offsetSlide = roundedSlide * 2;
+    } else if (current < totalSlides - 1) {
+      offsetSlide = roundedSlide - (current - 0.5);
+    } else {
+      offsetSlide = (roundedSlide - (totalSlides - 1) + 0.5) * 2;
     }
+    offsetSlide = Number(offsetSlide.toFixed(2));
 
-    // Ensure the last slide enters fully at or beyond 2.9
-    if (roundedScroll >= 2.7) {
-      activeIndex = 3;
-      currentScroll = sectionWidth * 3;
-      offset = 0;
-    }
-    // console.log({
-    //   activeIndex,
-    //   currentScroll,
-    //   offset,
-    //   roundedScroll,
-    //   progress: (offset - (1 - threshold)) / threshold,
-    //   transit: roundedScroll / 3,
-    // });
-    controls.start({
-      x: -currentScroll,
-      transition: { ease: 'easeOut', duration: 0.25 },
-    });
-    const mixColor = mix('#ff0088', '#008cff');
+    const progressWidth = +(offsetCarrosel * 100).toFixed(2);
 
-    progressControl.start({
-      scaleX: roundedScroll / 3.01,
-      backgroundColor: mixColor(offset),
+    elemCarouselBarProgress.start({
+      maxWidth: `${progressWidth}%`,
+      backgroundColor: mixColor(offsetSlide),
       transition: {
-        default: { type: 'spring', bounce: 0.2 },
+        default: { type: 'spring', bounce: 0.2, visualDuration: 0.3 },
         backgroundColor: { ease: 'linear', duration: 0.1 },
       },
     });
-    elementControl.start({
-      backgroundColor: mixColor(offset),
+    elemCarouselBorder.start({
+      backgroundColor: mixColor(offsetSlide),
       transition: { ease: 'linear', duration: 0.1 },
     });
+    elemCarouselPointsProgress.start({
+      backgroundColor: mixColor(offsetSlide),
+      transition: { ease: 'linear', duration: 0.1 },
+    });
+
+    if (currentSlide !== current) {
+      elementCarouselSlides.start({
+        x: newScroll,
+        transition: { type: 'spring', bounce: 0.4 },
+      });
+
+      setCurrentSlide(current);
+    }
   };
 
-  const debounced = useDebouncedCallback(
-    // function
-    (value) => {
-      //   setScrollY(value);
-      //   console.log(value);
-      handleScroll(value);
-    },
-    // delay in ms
-    5,
-  );
+  const debouncedScroll = useDebouncedCallback((value) => {
+    handleScroll(value);
+  }, 5);
+
+  const debouncedResize = useDebouncedCallback(() => {
+    setTimeout(() => {
+      setResizeKey(Math.random());
+    }, 100);
+    setTimeout(() => {
+      scrollTo(0);
+    }, 200);
+  }, 100);
 
   window.addEventListener('scroll', () => {
-    debounced(window.scrollY);
-    // setScrollY(window.scrollY);
+    debouncedScroll(window.scrollY);
+  });
+
+  window.addEventListener('resize', () => {
+    debouncedResize();
   });
 
   useEffect(() => {
-    elementControl.start({
-      scaleX: 0.9,
-      opacity: 1,
-      transition: { ease: 'easeOut', duration: 0.5, delay: 3 },
-    });
-    // return () => {
-    //   window.removeEventListener('scroll', () => {
-    //     handleScroll(window.scrollY);
-    //     // setScrollY(window.scrollY);
-    //   });
-    // };
-  }, []);
+    if (containerRef.current && totalSlides === 0) {
+      const slidesLength = containerRef.current.querySelectorAll('.sectionCarousel').length;
+      setTotalSlides(slidesLength);
+    }
+    if (totalSlides !== 0 && visible) {
+      elemCarouselBorder.start({
+        opacity: 1,
+        x: 0,
+        transition: { ease: 'easeOut', duration: 1, delay: 0.5 },
+      });
+      elemCarouselWrapper.start({
+        opacity: 1,
+        x: 0,
+        transition: { ease: 'easeOut', duration: 0.5, delay: 1 },
+      });
+    }
+  }, [totalSlides, visible]);
+
+  const getLeft = (index: number) => {
+    if (index === 0) {
+      return '0px';
+    }
+
+    if (index === 1) {
+      return `${Math.min(window.innerWidth * 0.5, 700) / 2 / (totalSlides - 1)}px`;
+    }
+    if (index < totalSlides - 1) {
+      return `${(Math.min(window.innerWidth * 0.5, 700) / 2 / (totalSlides - 1)) * (index + 1)}px`;
+    }
+    return `${(Math.min(window.innerWidth * 0.5, 700) / 2 / (totalSlides - 1)) * (index + 2)}px`;
+  };
 
   return (
     <div ref={containerRef} className={styles.carouselContainer}>
       <motion.div
-        initial={{ backgroundColor: '#ff0088', scaleX: 0.7, opacity: 0 }}
-        className={styles.carouselTrack}
-        animate={elementControl}
+        initial={{ backgroundColor: '#ff0088', opacity: 0, x: -100 }}
+        className={styles.carouselBorder}
+        animate={elemCarouselBorder}
       />
       <motion.div
-        initial={{ scaleX: 0, backgroundColor: '#ff0088' }}
-        style={{
-          position: 'absolute',
-          width: '90%',
-          bottom: 0,
-          left: 0,
-          height: 2,
-          originX: 0,
-        }}
-        animate={progressControl}
-        // drag="x"
-        // dragConstraints={{ left: 0, right: 0 }}
-        // dragElastic={0.1}
-      />
-      <motion.div className={styles.carouselInner} animate={controls} style={{ display: 'flex' }}>
-        {/* {sections.map((section, index) => (
-          <div className={styles.carouselSection} key={index}>
-            <h1>Section {section}</h1>
-          </div>
-        ))} */}
-
-        <section className={styles.carouselSection}>
+        className={styles.carouselProgress}
+        initial={{ opacity: 0, x: -10 }}
+        animate={elemCarouselWrapper}
+      >
+        <motion.div
+          className={styles.carouselProgressInner}
+          initial={{ maxWidth: '0%', backgroundColor: '#ff0088' }}
+          animate={elemCarouselBarProgress}
+          onClick={() => {
+            scrollTo(0);
+          }}
+        />
+        {totalSlides > 0 &&
+          Array.from({ length: totalSlides }).map((_, index) => (
+            <motion.span
+              key={index + resizeKey.toString()}
+              initial={{ backgroundColor: '#ff0088' }}
+              animate={elemCarouselPointsProgress}
+              onClick={() => {
+                if (index === currentSlide + 1) {
+                  scrollTo(index * 0.5 * Math.min(window.innerWidth * 0.5, 700));
+                }
+              }}
+              style={{
+                left: `${getLeft(index)}`,
+                opacity: `${index === currentSlide + 1 ? 1 : 0}`,
+                cursor: `${index === currentSlide + 1 ? 'pointer' : 'default'}`,
+                transform: `${index === currentSlide + 1 || index < currentSlide + 1 ? 'translateX(-14px)' : 'translateX(-180px)'}`,
+              }}
+            />
+          ))}
+      </motion.div>
+      <motion.div
+        className={styles.carouselInner}
+        animate={elementCarouselSlides}
+        style={{ display: 'flex' }}
+      >
+        <section className={styles.carouselSection + ' sectionCarousel'}>
           <p>Olá, sou de São Paulo/Br e atuo com desenvolvimento web desde 2020.</p>
           <p>
             Com uma mente analitica e um olhar criativo, busco sempre a combinação perfeita entre
@@ -182,7 +184,7 @@ const Carousel = ({ scrollTo }: { scrollTo: (value: number) => void }) => {
             de apps e muito mais.
           </p>
         </section>
-        <section className={styles.carouselSection}>
+        <section className={styles.carouselSection + ' sectionCarousel'}>
           <h2>Experiência</h2>
           <p>
             <strong>Desenvolvedor Front-end Sênior</strong>
@@ -193,7 +195,7 @@ const Carousel = ({ scrollTo }: { scrollTo: (value: number) => void }) => {
           </p>
         </section>
 
-        <section className={styles.carouselSection}>
+        <section className={styles.carouselSection + ' sectionCarousel'}>
           <h2>Formação</h2>
           <p>
             <strong>Engenharia de Software</strong>
@@ -211,7 +213,7 @@ const Carousel = ({ scrollTo }: { scrollTo: (value: number) => void }) => {
           </p>
         </section>
 
-        <section className={styles.carouselSection}>
+        <section className={styles.carouselSection + ' sectionCarousel'}>
           <h2>Formação</h2>
           <p>
             <strong>Engenharia de Software</strong>

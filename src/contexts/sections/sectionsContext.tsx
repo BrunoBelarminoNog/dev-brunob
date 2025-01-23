@@ -7,13 +7,13 @@ export type ISections = 'aboutme' | 'main' | 'contact';
 
 interface SectionsContextData {
   currentSection: ISections;
-  previousSection: ISections;
+  previousSection: ISections | undefined;
 }
 
 const SectionsContext = createContext({} as SectionsContextData);
 
 export const SectionsProvider = ({ children }: { children: ReactElement }) => {
-  const [previousSection, setPreviousSection] = useState<ISections>('main');
+  const [previousSection, setPreviousSection] = useState<ISections | undefined>(undefined);
   const [currentSection, setCurrentSection] = useState<ISections>('main');
   const searchParams = useSearchParams();
 
@@ -23,10 +23,11 @@ export const SectionsProvider = ({ children }: { children: ReactElement }) => {
       paramSection &&
       (paramSection === 'aboutme' || paramSection === 'main' || paramSection === 'contact')
     ) {
-      setPreviousSection(currentSection);
+      const prev = previousSection ? currentSection : paramSection;
+      setPreviousSection(prev);
       setCurrentSection(paramSection);
     } else {
-      setPreviousSection(currentSection);
+      setPreviousSection('main');
       setCurrentSection('main');
     }
   }, [searchParams]);

@@ -14,28 +14,28 @@ export function getMouseDegrees(x: number, y: number, degreeLimit: number) {
 
   const w = { x: window.innerWidth, y: window.innerHeight };
 
-  // Left (Rotates neck left between 0 and -degreeLimit)
+  // Left
   if (x <= w.x / 2) {
     xdiff = w.x / 2 - x;
     xPercentage = (xdiff / (w.x / 2)) * 100;
-    dx = ((degreeLimit * xPercentage) / 100) * -1;
+    dx = ((degreeLimit * 0.7 * xPercentage) / 100) * -1;
   }
 
-  // Right (Rotates neck right between 0 and degreeLimit)
+  // Right
   if (x >= w.x / 2) {
     xdiff = x - w.x / 2;
     xPercentage = (xdiff / (w.x / 2)) * 100;
-    dx = (degreeLimit * xPercentage) / 100;
+    dx = (degreeLimit * 0.7 * xPercentage) / 100;
   }
 
-  // Up (Rotates neck up between 0 and -degreeLimit)
+  // Up
   if (y <= w.y / 2) {
     ydiff = w.y / 2 - y;
     yPercentage = (ydiff / (w.y / 2)) * 100;
-    dy = ((degreeLimit * 0.4 * yPercentage) / 100) * -1;
+    dy = ((degreeLimit * 0.2 * yPercentage) / 100) * -1;
   }
 
-  // Down (Rotates neck down between 0 and degreeLimit)
+  // Down
   if (y >= w.y / 2) {
     ydiff = y - w.y / 2;
     yPercentage = (ydiff / (w.y / 2)) * 100;
@@ -49,11 +49,10 @@ export function moveJoint(
   mouse: { x: number; y: number },
   joint: Object3D<Object3DEventMap>,
   degreeLimit: number,
-  lerpFactor: number = 0.05, // Controls the speed of interpolation
+  lerpFactor: number = 0.05,
 ) {
   const degrees = getMouseDegrees(mouse.x, mouse.y, degreeLimit);
 
-  // Gradually interpolate to the new rotation values
   const targetRotationX = MathUtils.degToRad(degrees.y);
   const targetRotationY = MathUtils.degToRad(degrees.x);
 
@@ -136,13 +135,13 @@ const yAngleFinal = -0.4; // Rotação final do avatar
 const zAngleInicial = 0; // Rotação inicial do avatar
 const zAngleFinal = 0; // Rotação
 
+// MAIN - ABOUTME
 const xInicialMainToAboutme = -0.8;
 const xFinalMainToAboutme = 0.6;
-const zInicialMainToAboutme = 5;
+let zInicialMainToAboutme = 5;
 const zFinalMainToAboutme = 6;
 const yInicialMainToAboutme = 0.05;
 const yFinalMainToAboutme = -0.15;
-
 const xAngleInicialMainToAboutme = 0;
 const xAngleFinalMainToAboutme = 0.1;
 const yAngleInicialMainToAboutme = -0.4;
@@ -150,29 +149,57 @@ const yAngleFinalMainToAboutme = 0.5;
 const zAngleInicialMainToAboutme = 0;
 const zAngleFinalMainToAboutme = -0.1;
 
-const xInicialAboutmeToMain = 0.9;
-const xFinalAboutmeToMain = -0.8;
-const zInicialAboutmeToMain = 6;
-const zFinalAboutmeToMain = 5;
-const yInicialAboutmeToMain = 0;
-const yFinalAboutmeToMain = 0;
+// MAIN - CONTACT
+const xInicialMainToContact = -0.8;
+const xFinalMainToContact = 0;
+let zInicialMainToContact = 5;
+const zFinalMainToContact = 6.75;
+const yInicialMainToContact = 0.05;
+const yFinalMainToContact = -0.35;
+const xAngleInicialMainToContact = 0;
+const xAngleFinalMainToContact = -0.4;
+const yAngleInicialMainToContact = -0.4;
+const yAngleFinalMainToContact = 0;
+const zAngleInicialMainToContact = 0;
+const zAngleFinalMainToContact = 0;
+const ygridInicialMainToContact = 0;
+const ygridFinalMainToContact = -3;
 
-let progressoCaminhada = 0; // Vai de 0 a 1 (progresso da caminhada)
+// ABOUTME - CONTACT
+const xInicialAboutmeToContact = 0.6;
+const xFinalAboutmeToContact = 0;
+const zInicialAboutmeToContact = 6;
+const zFinalAboutmeToContact = 6.75;
+const yInicialAboutmeToContact = -0.15;
+const yFinalAboutmeToContact = -0.35;
+const xAngleInicialAboutmeToContact = 0.1;
+const xAngleFinalAboutmeToContact = -0.4;
+const yAngleInicialAboutmeToContact = 0.5;
+const yAngleFinalAboutmeToContact = 0;
+const zAngleInicialAboutmeToContact = -0.1;
+const zAngleFinalAboutmeToContact = 0;
+const ygridInicialAboutmeToContact = 0;
+const ygridFinalAboutmeToContact = -3;
+
 let isRun = false;
 
+let progressoCaminhadaMainInit = 0;
+let progressoAngleMainInit = 0;
+let progressoYMainInit = 0;
+
 let progressoCaminhadaMainToAboutme = 0;
-const progressoAngleMainToAboutme = 0;
+let progressoCaminhadaMainToContact = 0;
+let progressoCaminhadaAboutmeToContact = 0;
 
-let qlq = 0;
-let indexY = 0;
+let axisX = 0;
+let axisY = 0;
+let axisZ = 0;
 
-let xxx = 0;
-let yyy = 0;
-let zzz = 0;
+let angleX = 0;
+let angleY = 0;
+let angleZ = 0;
 
-let xRot = 0;
-let yRot = 0;
-let zRot = 0;
+let gridY = 0;
 
 export function frameInitialize({
   state,
@@ -189,15 +216,16 @@ export function frameInitialize({
   refGrid: Object3D<Object3DEventMap>;
   scene: Object3D<Object3DEventMap>;
   currentSection: ISections;
-  previousSection: ISections;
+  previousSection: ISections | undefined;
 }) {
+  zInicialMainToAboutme = 5;
   if (currentSection === 'main' && previousSection === 'main') {
-    if (indexY < 0.07 && isJumping) {
-      indexY += 0.003;
-    } else if (indexY >= 0.07 && indexY < 1 && isJumping) {
-      indexY += 0.1;
+    if (progressoYMainInit < 0.07 && isJumping) {
+      progressoYMainInit += 0.003;
+    } else if (progressoYMainInit >= 0.07 && progressoYMainInit < 1 && isJumping) {
+      progressoYMainInit += 0.1;
     }
-    yyy = yInicial + (yFinal - yInicial) * indexY;
+    axisY = yInicial + (yFinal - yInicial) * progressoYMainInit;
 
     if (isWalking && !isRun) {
       setTimeout(() => {
@@ -205,84 +233,199 @@ export function frameInitialize({
       }, 700);
     }
 
-    if (isRun && progressoCaminhada < 1) {
-      progressoCaminhada += 0.0055;
-
-      zzz = zInicial + (zFinal - zInicial) * progressoCaminhada;
-    } else if (!isWalking && progressoCaminhada >= 1) {
-      if (qlq < 1) {
-        qlq += 0.01;
+    if (isRun && progressoCaminhadaMainInit < 1) {
+      progressoCaminhadaMainInit += 0.0055;
+      axisZ = zInicial + (zFinal - zInicial) * progressoCaminhadaMainInit;
+    } else if (!isWalking && progressoCaminhadaMainInit >= 1) {
+      if (progressoAngleMainInit < 1) {
+        progressoAngleMainInit += 0.01;
       }
 
-      xxx = xInicial + (xFinal - xInicial) * qlq;
-      xRot = xAngleInicial + (xAngleFinal - xAngleInicial) * qlq;
-      yRot = yAngleInicial + (yAngleFinal - yAngleInicial) * qlq;
-      zRot = zAngleInicial + (zAngleFinal - zAngleInicial) * qlq;
+      axisX = xInicial + (xFinal - xInicial) * progressoAngleMainInit;
+      angleX = xAngleInicial + (xAngleFinal - xAngleInicial) * progressoAngleMainInit;
+      angleY = yAngleInicial + (yAngleFinal - yAngleInicial) * progressoAngleMainInit;
+      angleZ = zAngleInicial + (zAngleFinal - zAngleInicial) * progressoAngleMainInit;
     }
   }
 
-  if (currentSection === 'aboutme' && previousSection === 'main') {
+  if (currentSection === 'aboutme' && previousSection === 'aboutme') {
+    zInicialMainToAboutme = 3;
     if (progressoCaminhadaMainToAboutme < 1) {
       progressoCaminhadaMainToAboutme += 0.008;
 
-      zzz =
+      gridY = 0;
+      axisZ =
         zInicialMainToAboutme +
         (zFinalMainToAboutme - zInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
-      xxx =
+      axisX =
         xInicialMainToAboutme +
         (xFinalMainToAboutme - xInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
 
-      yyy =
+      axisY =
         yInicialMainToAboutme +
         (yFinalMainToAboutme - yInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
 
-      xRot =
+      angleX =
         xAngleInicialMainToAboutme +
         (xAngleFinalMainToAboutme - xAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
-      yRot =
+      angleY =
         yAngleInicialMainToAboutme +
         (yAngleFinalMainToAboutme - yAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
-      zRot =
+      angleZ =
         zAngleInicialMainToAboutme +
         (zAngleFinalMainToAboutme - zAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
     }
+    zInicialMainToAboutme = 5;
   }
 
-  if (currentSection === 'main' && previousSection === 'aboutme') {
-    if (progressoCaminhadaMainToAboutme > 0) {
+  if (
+    (currentSection === 'main' && previousSection === 'aboutme') ||
+    (currentSection === 'aboutme' && previousSection === 'main')
+  ) {
+    const limit = currentSection === 'main' && previousSection === 'aboutme' ? 0 : 1;
+
+    if (limit === 0 && progressoCaminhadaMainToAboutme > limit) {
       progressoCaminhadaMainToAboutme -= 0.008;
-
-      zzz =
-        zInicialMainToAboutme +
-        (zFinalMainToAboutme - zInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
-      xxx =
-        xInicialMainToAboutme +
-        (xFinalMainToAboutme - xInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
-
-      yyy =
-        yInicialMainToAboutme +
-        (yFinalMainToAboutme - yInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
-
-      xRot =
-        xAngleInicialMainToAboutme +
-        (xAngleFinalMainToAboutme - xAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
-      yRot =
-        yAngleInicialMainToAboutme +
-        (yAngleFinalMainToAboutme - yAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
-      zRot =
-        zAngleInicialMainToAboutme +
-        (zAngleFinalMainToAboutme - zAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
+      progressoCaminhadaAboutmeToContact = 1;
+    } else if (limit === 1 && progressoCaminhadaMainToAboutme < limit) {
+      progressoCaminhadaMainToAboutme += 0.008;
+      progressoCaminhadaAboutmeToContact = 0;
     }
+    gridY = 0;
+    axisZ =
+      zInicialMainToAboutme +
+      (zFinalMainToAboutme - zInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
+    axisX =
+      xInicialMainToAboutme +
+      (xFinalMainToAboutme - xInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
+
+    axisY =
+      yInicialMainToAboutme +
+      (yFinalMainToAboutme - yInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
+
+    angleX =
+      xAngleInicialMainToAboutme +
+      (xAngleFinalMainToAboutme - xAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
+    angleY =
+      yAngleInicialMainToAboutme +
+      (yAngleFinalMainToAboutme - yAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
+    angleZ =
+      zAngleInicialMainToAboutme +
+      (zAngleFinalMainToAboutme - zAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
   }
 
-  scene.rotation.set(xRot, yRot, zRot);
+  if (
+    (currentSection === 'contact' && previousSection === 'main') ||
+    (currentSection === 'main' && previousSection === 'contact')
+  ) {
+    const limit = currentSection === 'main' && previousSection === 'contact' ? 0 : 1;
+
+    if (limit === 0 && progressoCaminhadaMainToContact > limit) {
+      progressoCaminhadaMainToContact -= 0.02;
+      progressoCaminhadaMainToAboutme = progressoCaminhadaMainToContact;
+      progressoCaminhadaAboutmeToContact = progressoCaminhadaMainToContact;
+    } else if (limit === 1 && progressoCaminhadaMainToContact < limit) {
+      progressoCaminhadaMainToContact += 0.008;
+      progressoCaminhadaMainToAboutme = progressoCaminhadaMainToContact;
+      progressoCaminhadaAboutmeToContact = progressoCaminhadaMainToContact;
+    }
+
+    axisZ =
+      zInicialMainToContact +
+      (zFinalMainToContact - zInicialMainToContact) * progressoCaminhadaMainToContact;
+    axisX =
+      xInicialMainToContact +
+      (xFinalMainToContact - xInicialMainToContact) * progressoCaminhadaMainToContact;
+    axisY =
+      yInicialMainToContact +
+      (yFinalMainToContact - yInicialMainToContact) * progressoCaminhadaMainToContact;
+    angleX =
+      xAngleInicialMainToContact +
+      (xAngleFinalMainToContact - xAngleInicialMainToContact) * progressoCaminhadaMainToContact;
+    angleY =
+      yAngleInicialMainToContact +
+      (yAngleFinalMainToContact - yAngleInicialMainToContact) * progressoCaminhadaMainToContact;
+    angleZ =
+      zAngleInicialMainToContact +
+      (zAngleFinalMainToContact - zAngleInicialMainToContact) * progressoCaminhadaMainToContact;
+
+    gridY =
+      ygridInicialMainToContact +
+      (ygridFinalMainToContact - ygridInicialMainToContact) * progressoCaminhadaMainToContact;
+  }
+
+  if (
+    (currentSection === 'contact' && previousSection === 'aboutme') ||
+    (currentSection === 'aboutme' && previousSection === 'contact')
+  ) {
+    const limit = currentSection === 'aboutme' && previousSection === 'contact' ? 0 : 1;
+
+    if (limit === 0 && progressoCaminhadaAboutmeToContact > limit) {
+      progressoCaminhadaAboutmeToContact -= 0.01;
+      progressoCaminhadaMainToContact = progressoCaminhadaAboutmeToContact;
+    } else if (limit === 1 && progressoCaminhadaAboutmeToContact < limit) {
+      progressoCaminhadaAboutmeToContact += 0.008;
+      progressoCaminhadaMainToContact = progressoCaminhadaAboutmeToContact;
+    }
+
+    axisZ =
+      zInicialAboutmeToContact +
+      (zFinalAboutmeToContact - zInicialAboutmeToContact) * progressoCaminhadaAboutmeToContact;
+
+    axisX =
+      xInicialAboutmeToContact +
+      (xFinalAboutmeToContact - xInicialAboutmeToContact) * progressoCaminhadaAboutmeToContact;
+    axisY =
+      yInicialAboutmeToContact +
+      (yFinalAboutmeToContact - yInicialAboutmeToContact) * progressoCaminhadaAboutmeToContact;
+    angleX =
+      xAngleInicialAboutmeToContact +
+      (xAngleFinalAboutmeToContact - xAngleInicialAboutmeToContact) *
+        progressoCaminhadaAboutmeToContact;
+    angleY =
+      yAngleInicialAboutmeToContact +
+      (yAngleFinalAboutmeToContact - yAngleInicialAboutmeToContact) *
+        progressoCaminhadaAboutmeToContact;
+    angleZ =
+      zAngleInicialAboutmeToContact +
+      (zAngleFinalAboutmeToContact - zAngleInicialAboutmeToContact) *
+        progressoCaminhadaAboutmeToContact;
+
+    gridY =
+      ygridInicialAboutmeToContact +
+      (ygridFinalAboutmeToContact - ygridInicialAboutmeToContact) *
+        progressoCaminhadaAboutmeToContact;
+  }
+
+  if (currentSection === 'contact' && previousSection === 'contact') {
+    if (progressoCaminhadaMainToContact < 1) {
+      progressoCaminhadaMainToContact += 0.006;
+      progressoCaminhadaMainToAboutme = progressoCaminhadaMainToContact;
+      progressoCaminhadaAboutmeToContact = progressoCaminhadaMainToContact;
+    }
+
+    zInicialMainToContact = 4;
+    axisZ =
+      zInicialMainToContact +
+      (zFinalMainToContact - zInicialMainToContact) * progressoCaminhadaMainToContact;
+
+    axisX = 0;
+    axisY = -0.35;
+    angleX = -0.4;
+    angleY = 0;
+    angleZ = 0;
+    gridY = -3;
+    zInicialMainToContact = 5;
+  }
+
+  scene.rotation.set(angleX, angleY, angleZ);
   state.camera.rotation.set(-0.2, 0, 0);
 
-  scene.position.set(0, yyy, zzz);
-  state.camera.position.set(xxx, 1.5, 7);
+  scene.position.set(0, axisY, axisZ);
+  state.camera.position.set(axisX, 1.5, 7);
 
   if (refGrid) {
-    refGrid.position.set(xxx, 0, 0);
-    refGrid.rotation.set(xRot, yRot * -1, zRot);
+    refGrid.position.set(axisX, gridY, 0);
+    refGrid.rotation.set(angleX, angleY * -1, angleZ);
   }
 }
