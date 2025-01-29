@@ -1,7 +1,7 @@
 import { ISections } from '@/contexts/sections/sectionsContext';
 import { MutableRefObject } from 'react';
 import { AnimationAction, Group, Mesh, Object3DEventMap } from 'three';
-import { reactOnMouseClick, setObjects } from '../functions';
+import { setObjects } from '../functions';
 import storySimpleWalk from './simpleWalk';
 
 const storyIntroduction = ({
@@ -45,10 +45,7 @@ const storyIntroduction = ({
     scene.scale.set(1, 1, 1);
 
     if (currentSection === 'main' && previousSection === 'main') {
-      setTimeout(() => {
-        window.dispatchEvent(new Event('animationIntroInit'));
-      }, 2500);
-      actionEnterJump.current.reset().startAt(3).play();
+      actionEnterJump.current.reset().startAt(2).play();
 
       actionGreet.current.clampWhenFinished = true;
       actionGreet.current.repetitions = 0;
@@ -60,19 +57,19 @@ const storyIntroduction = ({
 
       setTimeout(() => {
         if (actionEnterJump.current && actionWalkLoop.current) {
-          actionWalkLoop.current?.reset().play().crossFadeFrom(actionEnterJump.current, 1, true);
+          actionWalkLoop.current?.reset().play().crossFadeFrom(actionEnterJump.current, 0.5, true);
         }
-      }, 4000);
+      }, 3250);
 
       setTimeout(() => {
         if (actionWalkLoop.current && actionBreathing.current) {
-          actionBreathing.current.reset().play().crossFadeFrom(actionWalkLoop.current, 0.7, true);
+          actionBreathing.current.reset().play().crossFadeFrom(actionWalkLoop.current, 1, true);
         }
-      }, 7600);
+      }, 6800);
 
       setTimeout(() => {
         window.dispatchEvent(new Event('playSectionInitContent'));
-      }, 8500);
+      }, 8000);
       setTimeout(() => {
         if (actionGreet.current && actionBreathing.current) {
           actionGreet.current.reset().play().crossFadeFrom(actionBreathing.current, 1, true);
@@ -82,9 +79,9 @@ const storyIntroduction = ({
       setTimeout(() => {
         if (actionGreet.current && actionBreathing.current) {
           actionBreathing.current.reset().play().crossFadeFrom(actionGreet.current, 0.7, true);
-          window.addEventListener('click', (ev) =>
-            reactOnMouseClick(ev, actionShock, actionBreathing),
-          );
+          // window.addEventListener('click', (ev) =>
+          //   reactOnMouseClick(ev, actionShock, actionBreathing),
+          // );
         }
       }, 11000);
     }

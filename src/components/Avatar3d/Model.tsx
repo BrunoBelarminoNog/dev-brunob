@@ -93,14 +93,16 @@ export default function Model() {
 
   useEffect(() => {
     if (currentSection === 'aboutme' && previousSection === 'main') {
-      storySimpleWalk({ seconds: 2000, actionBreathing, actionWalkLoop });
+      setTimeout(() => {
+        storySimpleWalk({ seconds: 1500, actionBreathing, actionWalkLoop });
+      }, 250);
       setTimeout(() => {
         window.dispatchEvent(new Event('playSectionAboutmeContent'));
       }, 1000);
     } else if (currentSection === 'aboutme' && previousSection === 'contact') {
       setTimeout(() => {
         window.dispatchEvent(new Event('playSectionAboutmeContent'));
-      }, 400);
+      }, 100);
     } else if (currentSection === 'main' && previousSection === 'aboutme') {
       setTimeout(() => {
         window.dispatchEvent(new Event('playSectionInitContent'));
@@ -110,14 +112,14 @@ export default function Model() {
         window.dispatchEvent(new Event('playSectionInitContent'));
       }, 1000);
     } else if (currentSection === 'contact' && previousSection === 'main') {
-      storySimpleWalk({ seconds: 2000, actionBreathing, actionWalkLoop });
+      storySimpleWalk({ seconds: 1700, actionBreathing, actionWalkLoop });
       setTimeout(() => {
         window.dispatchEvent(new Event('playSectionContactContent'));
-      }, 2000);
+      }, 1000);
     } else if (currentSection === 'contact' && previousSection === 'aboutme') {
       setTimeout(() => {
         window.dispatchEvent(new Event('playSectionContactContent'));
-      }, 1500);
+      }, 1000);
     }
   }, [currentSection, previousSection]);
 

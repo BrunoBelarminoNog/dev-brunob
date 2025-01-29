@@ -111,12 +111,13 @@ export function onMouseMove(ev: MouseEvent) {
   mouse[1] = ev.clientY / window.innerHeight;
 
   const mousecoords = { x: ev.clientX, y: ev.clientY };
+
   if (neck && head && spine && spine1 && spine2) {
-    moveJoint(mousecoords, neck, 25);
-    moveJoint(mousecoords, head, 15);
-    moveJoint(mousecoords, spine, 5);
-    moveJoint(mousecoords, spine1, 5);
-    moveJoint(mousecoords, spine2, 5);
+    moveJoint(mousecoords, neck, 5);
+    moveJoint(mousecoords, head, 5);
+    moveJoint(mousecoords, spine, 2);
+    moveJoint(mousecoords, spine1, 2);
+    moveJoint(mousecoords, spine2, 2);
   }
 }
 
@@ -129,11 +130,11 @@ const yInicial = 0.75; // Linha central do eixo
 const yFinal = 0.05; // Posição final do avatar (perto da câmera)
 
 const xAngleInicial = 0; // Rotação inicial do avatar
-const xAngleFinal = 0; // Rotação final do avatar
+const xAngleFinal = 0.07; // Rotação final do avatar
 const yAngleInicial = 0; // Rotação inicial do avatar
 const yAngleFinal = -0.4; // Rotação final do avatar
 const zAngleInicial = 0; // Rotação inicial do avatar
-const zAngleFinal = 0; // Rotação
+const zAngleFinal = 0.08; // Rotação
 
 // MAIN - ABOUTME
 const xInicialMainToAboutme = -0.8;
@@ -142,11 +143,11 @@ let zInicialMainToAboutme = 5;
 const zFinalMainToAboutme = 6;
 const yInicialMainToAboutme = 0.05;
 const yFinalMainToAboutme = -0.15;
-const xAngleInicialMainToAboutme = 0;
+const xAngleInicialMainToAboutme = xAngleFinal;
 const xAngleFinalMainToAboutme = 0.1;
-const yAngleInicialMainToAboutme = -0.4;
+const yAngleInicialMainToAboutme = yAngleFinal;
 const yAngleFinalMainToAboutme = 0.5;
-const zAngleInicialMainToAboutme = 0;
+const zAngleInicialMainToAboutme = zAngleFinal;
 const zAngleFinalMainToAboutme = -0.1;
 
 // MAIN - CONTACT
@@ -155,14 +156,14 @@ const xFinalMainToContact = 0;
 let zInicialMainToContact = 5;
 const zFinalMainToContact = 6.75;
 const yInicialMainToContact = 0.05;
-const yFinalMainToContact = -0.35;
-const xAngleInicialMainToContact = 0;
-const xAngleFinalMainToContact = -0.4;
-const yAngleInicialMainToContact = -0.4;
+const yFinalMainToContact = -0.3;
+const xAngleInicialMainToContact = xAngleFinal;
+const xAngleFinalMainToContact = -0.3;
+const yAngleInicialMainToContact = yAngleFinal;
 const yAngleFinalMainToContact = 0;
-const zAngleInicialMainToContact = 0;
+const zAngleInicialMainToContact = zAngleFinal;
 const zAngleFinalMainToContact = 0;
-const ygridInicialMainToContact = 0;
+const ygridInicialMainToContact = -0.7;
 const ygridFinalMainToContact = -3;
 
 // ABOUTME - CONTACT
@@ -171,14 +172,14 @@ const xFinalAboutmeToContact = 0;
 const zInicialAboutmeToContact = 6;
 const zFinalAboutmeToContact = 6.75;
 const yInicialAboutmeToContact = -0.15;
-const yFinalAboutmeToContact = -0.35;
+const yFinalAboutmeToContact = -0.3;
 const xAngleInicialAboutmeToContact = 0.1;
-const xAngleFinalAboutmeToContact = -0.4;
+const xAngleFinalAboutmeToContact = -0.3;
 const yAngleInicialAboutmeToContact = 0.5;
 const yAngleFinalAboutmeToContact = 0;
 const zAngleInicialAboutmeToContact = -0.1;
 const zAngleFinalAboutmeToContact = 0;
-const ygridInicialAboutmeToContact = 0;
+const ygridInicialAboutmeToContact = -0.1;
 const ygridFinalAboutmeToContact = -3;
 
 let isRun = false;
@@ -199,8 +200,12 @@ let angleX = 0;
 let angleY = 0;
 let angleZ = 0;
 
-let gridY = 0;
+let gridAngleX = 0;
+let gridAngleY = 0;
+let gridAngleZ = 0;
 
+let gridY = -0.1;
+let animationIntroMainInitJump = true;
 export function frameInitialize({
   state,
   isJumping,
@@ -219,22 +224,20 @@ export function frameInitialize({
   previousSection: ISections | undefined;
 }) {
   zInicialMainToAboutme = 5;
+
   if (currentSection === 'main' && previousSection === 'main') {
-    if (progressoYMainInit < 0.07 && isJumping) {
-      progressoYMainInit += 0.003;
-    } else if (progressoYMainInit >= 0.07 && progressoYMainInit < 1 && isJumping) {
+    if (!animationIntroMainInitJump && progressoYMainInit < 1 && isJumping) {
       progressoYMainInit += 0.1;
     }
-    axisY = yInicial + (yFinal - yInicial) * progressoYMainInit;
 
-    if (isWalking && !isRun) {
-      setTimeout(() => {
-        isRun = true;
-      }, 700);
+    if (animationIntroMainInitJump && isJumping) {
+      animationIntroMainInitJump = false;
+      window.dispatchEvent(new Event('animationIntroInit'));
     }
 
+    axisY = yInicial + (yFinal - yInicial) * progressoYMainInit;
     if (isRun && progressoCaminhadaMainInit < 1) {
-      progressoCaminhadaMainInit += 0.0055;
+      progressoCaminhadaMainInit += 0.0045;
       axisZ = zInicial + (zFinal - zInicial) * progressoCaminhadaMainInit;
     } else if (!isWalking && progressoCaminhadaMainInit >= 1) {
       if (progressoAngleMainInit < 1) {
@@ -245,6 +248,16 @@ export function frameInitialize({
       angleX = xAngleInicial + (xAngleFinal - xAngleInicial) * progressoAngleMainInit;
       angleY = yAngleInicial + (yAngleFinal - yAngleInicial) * progressoAngleMainInit;
       angleZ = zAngleInicial + (zAngleFinal - zAngleInicial) * progressoAngleMainInit;
+      gridY = -0.1 + (-0.7 - -0.1) * progressoAngleMainInit;
+      gridAngleX = angleX;
+      gridAngleY = angleY;
+      gridAngleZ = 0;
+    }
+
+    if (isWalking && !isRun) {
+      setTimeout(() => {
+        isRun = true;
+      }, 250);
     }
   }
 
@@ -253,7 +266,6 @@ export function frameInitialize({
     if (progressoCaminhadaMainToAboutme < 1) {
       progressoCaminhadaMainToAboutme += 0.008;
 
-      gridY = 0;
       axisZ =
         zInicialMainToAboutme +
         (zFinalMainToAboutme - zInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
@@ -274,6 +286,11 @@ export function frameInitialize({
       angleZ =
         zAngleInicialMainToAboutme +
         (zAngleFinalMainToAboutme - zAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
+
+      gridY = -0.1;
+      gridAngleX = angleX;
+      gridAngleY = angleY;
+      gridAngleZ = 0;
     }
     zInicialMainToAboutme = 5;
   }
@@ -285,7 +302,7 @@ export function frameInitialize({
     const limit = currentSection === 'main' && previousSection === 'aboutme' ? 0 : 1;
 
     if (limit === 0 && progressoCaminhadaMainToAboutme > limit) {
-      progressoCaminhadaMainToAboutme -= 0.008;
+      progressoCaminhadaMainToAboutme -= 0.03;
       progressoCaminhadaAboutmeToContact = 1;
     } else if (limit === 1 && progressoCaminhadaMainToAboutme < limit) {
       progressoCaminhadaMainToAboutme += 0.008;
@@ -312,6 +329,10 @@ export function frameInitialize({
     angleZ =
       zAngleInicialMainToAboutme +
       (zAngleFinalMainToAboutme - zAngleInicialMainToAboutme) * progressoCaminhadaMainToAboutme;
+    gridY = -0.7 + (-0.1 - -0.7) * progressoCaminhadaMainToAboutme;
+    gridAngleX = angleX;
+    gridAngleY = angleY;
+    gridAngleZ = 0;
   }
 
   if (
@@ -352,6 +373,9 @@ export function frameInitialize({
     gridY =
       ygridInicialMainToContact +
       (ygridFinalMainToContact - ygridInicialMainToContact) * progressoCaminhadaMainToContact;
+    gridAngleX = 0.07 + (-0.3 - 0.07) * progressoCaminhadaMainToContact;
+    gridAngleY = -0.4 + (0 - -0.4) * progressoCaminhadaMainToContact;
+    gridAngleZ = 0;
   }
 
   if (
@@ -361,10 +385,10 @@ export function frameInitialize({
     const limit = currentSection === 'aboutme' && previousSection === 'contact' ? 0 : 1;
 
     if (limit === 0 && progressoCaminhadaAboutmeToContact > limit) {
-      progressoCaminhadaAboutmeToContact -= 0.01;
+      progressoCaminhadaAboutmeToContact -= 0.025;
       progressoCaminhadaMainToContact = progressoCaminhadaAboutmeToContact;
     } else if (limit === 1 && progressoCaminhadaAboutmeToContact < limit) {
-      progressoCaminhadaAboutmeToContact += 0.008;
+      progressoCaminhadaAboutmeToContact += 0.02;
       progressoCaminhadaMainToContact = progressoCaminhadaAboutmeToContact;
     }
 
@@ -395,6 +419,10 @@ export function frameInitialize({
       ygridInicialAboutmeToContact +
       (ygridFinalAboutmeToContact - ygridInicialAboutmeToContact) *
         progressoCaminhadaAboutmeToContact;
+
+    gridAngleX = 0.1 + (-0.3 - 0.1) * progressoCaminhadaMainToContact;
+    gridAngleY = 0.5 + (0 - 0.5) * progressoCaminhadaMainToContact;
+    gridAngleZ = 0;
   }
 
   if (currentSection === 'contact' && previousSection === 'contact') {
@@ -410,12 +438,16 @@ export function frameInitialize({
       (zFinalMainToContact - zInicialMainToContact) * progressoCaminhadaMainToContact;
 
     axisX = 0;
-    axisY = -0.35;
-    angleX = -0.4;
+    axisY = -0.3;
+    angleX = 0 + (-0.3 - 0) * progressoCaminhadaMainToContact;
     angleY = 0;
     angleZ = 0;
     gridY = -3;
     zInicialMainToContact = 5;
+
+    gridAngleX = -0.2 + (-0.3 - -0.2) * progressoCaminhadaMainToContact;
+    gridAngleY = 0.05 + (0 - 0.05) * progressoCaminhadaMainToContact;
+    gridAngleZ = angleZ;
   }
 
   scene.rotation.set(angleX, angleY, angleZ);
@@ -426,6 +458,6 @@ export function frameInitialize({
 
   if (refGrid) {
     refGrid.position.set(axisX, gridY, 0);
-    refGrid.rotation.set(angleX, angleY * -1, angleZ);
+    refGrid.rotation.set(gridAngleX, gridAngleY * -1, gridAngleZ);
   }
 }
